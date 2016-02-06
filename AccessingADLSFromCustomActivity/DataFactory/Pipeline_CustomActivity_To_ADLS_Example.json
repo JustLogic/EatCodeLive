@@ -1,0 +1,40 @@
+﻿{
+  "$schema": "http://datafactories.schema.management.azure.com/schemas/2015-08-01/Microsoft.DataFactory.Pipeline.json",
+  "name": "Pipeline_CustomActivity_To_ADLS_Example",
+  "properties": {
+    "description": "",
+    "activities": [
+      {
+        "linkedServiceName": "LinkedService_HDION_Sample",
+        "name": "CustomActivity_Download_Sf_Leads_To_ADLS",
+        "outputs": [
+          { "name": "DataSet_ADLS_SfLeads" }
+        ],
+        "policy": {
+          "timeout": "02:00:00",
+          "concurrency": 1,
+          "retry": 3
+        },
+        "scheduler": {
+          "frequency": "Day",
+          "interval": 1
+        },
+        "type": "DotNetActivity",
+        "typeProperties": {
+          "assemblyName": "CustomActivity.dll",
+          "entryPoint": "CustomActivity.SampleActivity",
+          "packageLinkedService": "LinkedService_AS_EPTStorage",
+          "packageFile": "custom-activities/CustomActivity.zip",
+          "extendedProperties": {
+            "SliceStart": "$$Text.Format('{0:MM-dd-yyyy}', SliceStart)",
+            "RootFolder": "RawData",
+            "FileName": "SampleLeads"
+          }
+        }
+      }
+    ],
+    "start": "2015-12-07T00:00:00Z",
+    "end": "2015-12-07T23:59:59Z",
+    "isPaused": false
+  }
+}
