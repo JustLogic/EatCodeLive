@@ -1,0 +1,45 @@
+﻿{
+    "$schema": "http://datafactories.schema.management.azure.com/schemas/2015-08-01/Microsoft.DataFactory.Pipeline.json",
+    "name": "CopyDataPipeline",
+  "properties": {
+    "description": "Run Copy Pipeline Manually Sample",
+    "activities": [
+      {
+        "name": "CopyActivityTemplate",
+        "type": "Copy",
+        "inputs": [
+          {
+            "name": "DataSet_ASDB_TableOne"
+          }
+        ],
+        "outputs": [
+          {
+            "name": "DataSet_ASDB_TableTwo"
+          }
+        ],
+        "typeProperties": {
+          "source": {
+            "type": "SqlSource",
+            "sqlReaderQuery": "select * from MyTable"
+          },
+          "sink": {
+            "type": "SqlSink"
+          }
+        },
+        "policy": {
+          "concurrency": 1,
+          "executionPriorityOrder": "OldestFirst",
+          "retry": 3,
+          "timeout": "01:00:00"
+        },
+        "scheduler": {
+          "frequency": "Day",
+          "interval": 1
+        }
+      }
+    ],
+    "start": "2016-02-23T00:00:00Z",
+    "end": "2016-02-23T23:59:59Z",
+    "isPaused": true
+  }
+}

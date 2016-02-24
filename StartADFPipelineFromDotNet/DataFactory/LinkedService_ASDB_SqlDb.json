@@ -1,0 +1,10 @@
+﻿{
+    "$schema": "http://datafactories.schema.management.azure.com/schemas/2015-08-01/Microsoft.DataFactory.LinkedService.json",
+    "name": "LinkedService_ASDB_SqlDb",
+    "properties": {
+        "type": "AzureSqlDatabase",
+        "typeProperties": { 
+            "connectionString": "Server=tcp:<servername>.database.windows.net,1433;Database=<databasename>;User ID=<username>@<servername>;Password=<password>;Trusted_Connection=False;Encrypt=True;Connection Timeout=30"
+        }
+    }
+}
