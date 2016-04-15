@@ -8,50 +8,37 @@ namespace SalesforceReportsAPI
 {
     class Program
     {
+        static string username = "";
+        static string password = "";
+        static string usertoken = "";
+        static string consumerKey = "";
+        static string consumerSecret = "";
+        static string url = "https://login.salesforce.com/services/oauth2/token";
+        static string reportId = "xxxxxxxxxxxxxxx";    //Salesforce report id  
+
         static void Main(string[] args)
         {
-            string message = "";
-            try
-            {
-                var task = ExecuteReport();
-                task.Wait();
-            }
-            catch (Exception ex)
-            {
-                if (ex.InnerException != null)
-                {
-                    message += Environment.NewLine + ex.InnerException.Message;
-                }
-            }
 
-            Console.WriteLine("Results: ");
-            Console.WriteLine(message);
+            var task = ExecuteReport();
+            task.Wait();
+
             Console.ReadLine();
         }
 
-        public static async Task ExecuteReport()
+        public static async Task<string> ExecuteReport()
         {
-            string username = "";
-            string password = "";
-            string usertoken = "";
-            string consumerKey = "";
-            string consumerSecret = "";
-
-            var url = "https://login.salesforce.com/services/oauth2/token";
+            var sf_client = new Salesforce.Common.AuthenticationClient();
+            sf_client.ApiVersion = "v34.0";
+            await sf_client.UsernamePasswordAsync(consumerKey, consumerSecret, username, password + usertoken, url);
             
-            var authClient = new Salesforce.Common.AuthenticationClient();
-            authClient.ApiVersion = "v34.0";
-            await authClient.UsernamePasswordAsync(consumerKey, consumerSecret, username, password + usertoken, url);
+            string reportUrl = "/services/data/" + sf_client.ApiVersion + "/analytics/reports/" + reportId;
 
-            var reportId = "xxxxxxxxxxxxxxx";    //Salesforce report id        
-
-            string reportUrl = "/services/data/" + authClient.ApiVersion + "/analytics/reports/" + reportId;
-            
-            var restClient = new RestSharp.RestClient(authClient.InstanceUrl);
-            var restRequest = new RestSharp.RestRequest(reportUrl, RestSharp.Method.GET);
-            restRequest.AddHeader("Authorization", "Bearer " + authClient.AccessToken);
-            var restResponse = restClient.Execute(restRequest);
-            var reportData = restResponse.Content;           
+            var client = new RestSharp.RestClient(sf_client.InstanceUrl);
+            var request = new RestSharp.RestRequest(reportUrl, RestSharp.Method.GET);
+            request.AddHeader("Authorization", "Bearer " + sf_client.AccessToken);
+            var restResponse = client.Execute(request);
+            var reportData = restResponse.Content;
+            return reportData;
         }
     }
 }
